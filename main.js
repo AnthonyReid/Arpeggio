@@ -1,62 +1,54 @@
 
 $(document).ready(function() {
+var music = new Object(); //Create music object	
+music.init = function(custom){ 
 
-var music = new Object(); //Create music object
-music.chrScale = ["A","A#","B","C","C#","D","D#","E","F","F#","G","G#"]; //Create the scale array
-// Set up chord patterns using 3d array. One dimension contains chord types, the other their patterns
+	music.chrScale = ["A", "A#", "B", "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#"]; //Create the scale array
+	
 	music.chords = new Array;
-	music.chords.maj = new Array(0,4,7);
-	music.chords.min = new Array(0,3,7);
-	music.chords.dom7 = new Array(0,4,7,10);
-	music.chords.min7 = new Array(0,3,7,10);
-	music.chords.maj7 = new Array(0,4,7,11);
+	music.chords.maj = new Array(0, 4, 7);
+	music.chords.min = new Array(0, 3, 7);
+	music.chords.dom7 = new Array(0, 4, 7, 10);
+	music.chords.min7 = new Array(0, 3, 7, 10);
+	music.chords.maj7 = new Array(0, 4, 7, 11);
 	
 	music.scales = new Array;
-	music.scales.major = new Array(0,2,4,5,7,9,11)
-	music.scales.minor = new Array(0,2,3,5,7,8,10)
+	music.scales.major = new Array(0, 2, 4, 5, 7, 9, 11)
+	music.scales.minor = new Array(0, 2, 3, 5, 7, 8, 10)
 	
-	music.intervals = new Array ("Prime/Octave", "Minor Second", "Major Second", "Minor Third", "Major Third", "Perfect Fourth", "Tritone", "Perfect Fifth", "Minor Sixth", "Major Sixth", "Minor Seventh", "Major Seventh");
+	music.intervals = new Array("Prime/Octave", "Minor Second", "Major Second", "Minor Third", "Major Third", "Perfect Fourth", "Tritone", "Perfect Fifth", "Minor Sixth", "Major Sixth", "Minor Seventh", "Major Seventh");
 	
-	
-music.isnote = function(note) {				
 
-		music.chrScale.indexOf[note]==-1?return false:return true;
-			
-		
+
+
+	var standardfrets = new music.fretboard("E,A,D,G,B,E", 24)//Make standard guitar fretboards object
+}
+
+music.fretboard = function(strings, limit, pattern){ 	//Make fretboard class
+	this.openstrings = strings.split(",");				//Parse input into array
+	this.limit = limit;									//Set highest fret
+	this.string = new Array();							//Set up '2d' array to hold strings and frets
+	
+	if (typeof(pattern) == 'undefined') {   			//If pattern is not given
+		var pattern = new Array(); 						//Set up array to hold default pattern
+		for (i = 0; i <= limit; i++) {      			//Assume it is 0,1,2,3, etc and build scale
+			pattern.push(i);
+		}
 	}
+	for (n=1; n<=this.openstrings.length;n++) {						//Cycle through each string
+		this.string[n] = music.scale(this.openstrings[n-1],pattern);//Assign each fret its appropriate note
+	}
+}
 
-
-
-
-//	var incr=0;									//Counter for correct notes
-//	wrongnotes = new Array();					// Global array of incorrect notes
-//	for (n in notes) { 							// Iterate through each note of the input array
-//		var inci=0;								// Set the "not a match" counter to 0
-//		for (i in music.chrScale) {				// Iterate through each scale note
-//			if (music.chrScale[i] != notes[n]) {	// If the scale note doesn't match the input note
-//				inci++;							// Increase the not-a-match counter
-//			}
-//		}
-//		if (inci!=12) {							// If the not a match counter is not 12 (meaning a scale note matched)
-//			incr++;								// Increment the right note counter
-//		}
-//		else {									//If a note did match any scale note
-//			wrongnotes.push(notes[n]);			//append it to an array of invalid notes
-//		}
-//	}
-//	if (incr == notes.length) {					// If the right note counter is the same as the number of notes input
-//		return true	;							// Return true
-//	}	
-//	else {										//If any of the notes are wrong
-//		return false							//Return false
-//	
-//	}
-//}
+music.isNote = function(note) {				
+	music.chrScale.indexOf(note)==-1 ? bool = false : bool = true
+	return bool;
+}
 	
 music.scale = function (note,scale) {                           			
-	if ($.isArray(scale) && music.isnote(note)) {							//If both inputs are valid
-						                     		//Creates array to be returned
-		var index;													
+	if ($.isArray(scale) && music.isNote(note)) {							//If both inputs are valid
+		var newScale = new Array();				                     		//Creates array to be returned
+															
 		var startpoint = music.chrScale.indexOf(note);            		    //Find the index of the starting note in the chromatic scale
 		for (i in scale) {					 								//Loop through scale pattern
 			var index = parseInt(startpoint) + parseInt(scale[i]);
@@ -76,9 +68,9 @@ music.chordfind = function(notes) {
 	
 
 	
-	var notearray = notes.split(","); //Split up the CSV into an array			 		 			            
+	var notearray = music.parse(notes);		 		 			            
 	var intervals = new Array();
-		if (music.isnote(notearray)) { //If the notes are legit
+		if (notearray.every(music.isNote)) { //If the notes are legit
 			//Set up the array of patterns (fix this)
 			var patternArray = new Array();	
 			patternArray[0]= new Array ();
@@ -101,7 +93,7 @@ music.chordfind = function(notes) {
 		}
 		
 		else {
-			alert("Incorrect Input: " + wrongnotes.join(" ,"));
+			alert("Incorrect Input");
 		}
 }
 
@@ -118,15 +110,18 @@ music.numInterval = function (note1,note2) {
 	}
 }
 
+music.parse = function (input) {					
+
+		
+}
 
 
 $("#findbutton").click(function() {
-
-
-//var result = music.chordfind("C,E,G,B").toString(", ");
-
-alert(music.isnote("F"));
-
+music.init();
+var custguitar = new music.fretboard("E,A,D",12)
+alert (custguitar.string[3][0]);
+var majguitar = new music.fretboard("C",12,music.scales.major)
+alert (majguitar.string[1][3]);
 
 
 	
